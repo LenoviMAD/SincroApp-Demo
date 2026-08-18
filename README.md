@@ -24,7 +24,7 @@ No es un Windows Service registrado (no hereda de `ServiceBase` ni usa `Backgrou
 
 Esta app no tiene base de datos ni backend propio. Todo el flujo (login, subida de CSV/JSON, descarga de pedidos pendientes) se hace vía HTTP contra:
 
-- **`IntegradorArchivosApi-Demo`** → `http://localhost:5080` (ver [`../IntegradorArchivosApi-Demo`](../IntegradorArchivosApi-Demo)). Hay que levantarla **antes** de correr `SincroApp-Demo`, o el login y la sincronización van a fallar por connection refused.
+- **`IntegradorArchivosApi-Demo`** → `http://localhost:5080` (ver [`IntegradorArchivosApi-Demo`](https://github.com/LenoviMAD/IntegradorArchivosApi-Demo)). Hay que levantarla **antes** de correr `SincroApp-Demo`, o el login y la sincronización van a fallar por connection refused.
 
 ## Credenciales
 
