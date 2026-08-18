@@ -1,0 +1,6 @@
+ClientesID;Codigo;Nombre;Direccion;Localidad;Telefono;DiaDeVenta;PorcentajePercepcionIB;Latitud;Longitud;ListasPreciosID;TiposDocumentosID;NumeroDocumento;Baja
+1001;CLI-001;Almacen El Sol;Av. Corrientes 1234;Buenos Aires;011-4567-8901;2;0;-34.603722;-58.381592;1;1;20-12345678-9;False
+1002;CLI-002;Supermercado Norte;Ruta 9 km 50;Rosario;0341-456-7890;3;5;-34.608114;-58.370281;2;1;20-87654321-0;False
+1003;CLI-003;Cliente Demo;Belgrano 456;Cordoba;0351-123-4567;5;0;-34.609790;-58.392214;1;1;27-98765432-1;False
+1004;CLI-004;Almacen La Esquina;San Martin 789;Mendoza;0261-987-6543;1;0;-34.588560;-58.393236;3;2;35678901;False
+1005;CLI-005;Comercio El Centro;;La Plata;0221-456-7890;4;0;-34.611267;-58.363531;1;;;False

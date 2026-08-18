@@ -1,0 +1,15 @@
+{
+  "ApiUrla": "http://localhost:5080",
+  "ApiUrl": "http://localhost:5080",
+  "TxInterval": 5000,
+  "EnableLogging": false,
+  "PathArchivoTx": "C:\\Distri\\Subida",
+  "DownloadFolder": "C:\\Distri\\Descargados",
+  "ProcessedFolder": "C:\\Distri\\Procesados",
+  "ErrorFolder": "C:\\Distri\\Error",
+  "IntervaloSubidaSegundos": 60,
+  "IntervaloDescargaSegundos": 60,
+  "ApiUsuario": "demo",
+  "ApiClave": "Demo123!",
+  "UrlImagenBase": "https://cdn.empresademo.example/CatalogoEcom/"
+}

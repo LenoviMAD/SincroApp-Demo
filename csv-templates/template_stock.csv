@@ -1,0 +1,6 @@
+ProductosID;CodigoProducto;StockUnidades;StockCajas
+101;A-101;200;33
+102;B-202;150;25
+103;C-303;0;
+104;A-101B;80;6
+105;D-404;500;50

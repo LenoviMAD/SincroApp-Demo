@@ -1,0 +1,45 @@
+{
+  "impuestos": [
+    { "impuestosID": 1, "nombre": "IVA 21%", "porcentaje": 21.00 },
+    { "impuestosID": 2, "nombre": "IVA 10.5%", "porcentaje": 10.50 },
+    { "impuestosID": 3, "nombre": "Exento", "porcentaje": 0.00 }
+  ],
+  "marcasProductos": [
+    { "marcasProductosID": 1, "nombre": "Sin Marca" },
+    { "marcasProductosID": 2, "nombre": "Marca Demo A" },
+    { "marcasProductosID": 3, "nombre": "Marca Demo B" },
+    { "marcasProductosID": 4, "nombre": "Marca Demo C" }
+  ],
+  "familiasProductos": [
+    { "familiaProductosID": 1, "nombre": "Aceites" },
+    { "familiaProductosID": 2, "nombre": "Infusiones" },
+    { "familiaProductosID": 3, "nombre": "Harinas" },
+    { "familiaProductosID": 4, "nombre": "Azucares" }
+  ],
+  "categorias": [
+    { "categoriasProductosID": 1, "nombre": "Almacen" },
+    { "categoriasProductosID": 2, "nombre": "Bebidas" },
+    { "categoriasProductosID": 3, "nombre": "Limpieza" }
+  ],
+  "subCategorias": [
+    { "subCategoriasProductosID": 1, "nombre": "Aceites y Vinagres" },
+    { "subCategoriasProductosID": 2, "nombre": "Yerba y Te" },
+    { "subCategoriasProductosID": 3, "nombre": "Harinas y Feculas" },
+    { "subCategoriasProductosID": 4, "nombre": "Azucar y Edulcorantes" }
+  ],
+  "categoriasComerciales": [
+    { "categoriasComercialesID": 1, "nombre": "Categoría Comercial 1" },
+    { "categoriasComercialesID": 2, "nombre": "Categoría Comercial 2" },
+    { "categoriasComercialesID": 3, "nombre": "Categoría Comercial 3" }
+  ],
+  "listasPrecios": [
+    { "EmpresaID": 1, "ListasPreciosID": 1, "Nombre": "Lista Minorista", "Baja": false, "MontoMinimo": 5000.00, "PorcentajeMarcup": 21.00 },
+    { "EmpresaID": 1, "ListasPreciosID": 2, "Nombre": "Lista Mayorista", "Baja": false, "MontoMinimo": 50000.00, "PorcentajeMarcup": 15.00 },
+    { "EmpresaID": 1, "ListasPreciosID": 3, "Nombre": "Lista Distribuidor", "Baja": false, "MontoMinimo": 200000.00, "PorcentajeMarcup": 10.00 }
+  ],
+  "tiposDocumentos": [
+    { "tiposDocumentosID": 1, "nombre": "CUIT" },
+    { "tiposDocumentosID": 2, "nombre": "DNI" },
+    { "tiposDocumentosID": 3, "nombre": "Pasaporte" }
+  ]
+}

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>SincoApp — Guía de Carga de Archivos CSV y JSON v2.0</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 10pt;
+    color: #1a1a2e;
+    background: #fff;
+    line-height: 1.5;
+  }
+
+  /* ── PORTADA ── */
+  .cover {
+    background: linear-gradient(160deg, #0d1b3e 0%, #1a3a6b 60%, #2a5298 100%);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    text-align: center;
+    page-break-after: always;
+  }
+  .cover .badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 6px 20px;
+    font-size: 8pt;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 50px;
+    color: #a8c8f0;
+  }
+  .cover h1 {
+    font-size: 36pt;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  .cover h2 {
+    font-size: 18pt;
+    color: #5ba3e8;
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+  .cover p.subtitle {
+    font-size: 11pt;
+    color: #8ab8e0;
+    margin-bottom: 60px;
+  }
+  .cover hr { border: none; border-top: 2px solid #5ba3e8; width: 60px; margin: 0 auto 60px; }
+  .cover-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 60px;
+  }
+  .cover-card {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 14px 18px;
+    text-align: left;
+  }
+  .cover-card .label { font-size: 7pt; letter-spacing: 1.5px; text-transform: uppercase; color: #7ab0d8; margin-bottom: 4px; }
+  .cover-card .value { font-size: 10pt; font-weight: 500; }
+  .cover .version { font-size: 8pt; color: #6a9abf; }
+
+  /* ── CONTENIDO ── */
+  .page { padding: 40px 50px; max-width: 900px; margin: 0 auto; }
+  @media print { .page { max-width: none; padding: 20px 30px; } }
+
+  /* Tabla de contenido */
+  .toc { page-break-after: always; }
+  .toc h2 { font-size: 16pt; font-weight: 700; color: #0d1b3e; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+  .toc h2::before { content: '≡'; color: #2a5298; }
+  .toc-item { display: flex; justify-content: space-between; border-bottom: 1px dotted #c0cce0; padding: 7px 0; font-size: 9.5pt; }
+  .toc-item a { color: #1a1a2e; text-decoration: none; }
+  .toc-item.indent { padding-left: 24px; color: #555; font-size: 9pt; }
+  .toc-num { color: #2a5298; font-weight: 600; margin-right: 10px; }
+
+  /* Secciones */
+  .section { margin-bottom: 40px; page-break-inside: avoid; }
+  .section-title {
+    font-size: 16pt;
+    font-weight: 700;
+    color: #0d1b3e;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-num {
+    background: #2a5298;
+    color: #fff;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13pt;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .subsection-title {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #2a5298;
+    margin: 20px 0 10px;
+    padding-left: 10px;
+    border-left: 3px solid #2a5298;
+  }
+
+  /* Info cards */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .info-card { background: #f0f4fa; border: 1px solid #c8d8f0; border-radius: 6px; padding: 12px 16px; }
+  .info-card .lbl { font-size: 7.5pt; letter-spacing: 1px; text-transform: uppercase; color: #2a5298; font-weight: 600; margin-bottom: 4px; }
+  .info-card .val { font-size: 9.5pt; }
+
+  /* Tablas */
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 18px; }
+  thead th { background: #0d1b3e; color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
+  tbody tr:nth-child(even) { background: #f5f8ff; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid #dde8f5; vertical-align: top; }
+  .col-n { color: #2a5298; font-weight: 700; font-family: monospace; }
+  .col-name { font-family: monospace; font-size: 8.5pt; }
+  .req-obl { color: #c0392b; font-weight: 600; }
+  .req-opt { color: #27ae60; }
+  .group-row td { background: #e8f0fc; font-weight: 600; font-size: 8.5pt; color: #1a3a6b; padding: 5px 10px; }
+
+  /* Código */
+  .code-block {
+    background: #1a2744;
+    color: #a8d8a8;
+    font-family: 'Courier New', monospace;
+    font-size: 8pt;
+    padding: 14px 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+  .code-block .hl { color: #f0c060; }
+  .code-block .comment { color: #5a8a5a; font-style: italic; }
+
+  /* Alertas */
+  .alert { border-radius: 6px; padding: 12px 16px; margin: 14px 0; font-size: 9pt; }
+  .alert-warn { background: #fff8e8; border-left: 4px solid #e0a000; }
+  .alert-warn::before { content: '⚠ '; font-weight: 700; color: #e0a000; }
+  .alert-info { background: #e8f4ff; border-left: 4px solid #2a5298; }
+  .alert-info::before { content: 'ℹ '; font-weight: 700; color: #2a5298; }
+  .alert-tip { background: #f0f8f0; border-left: 4px solid #27ae60; }
+  .alert-tip::before { content: '💡 '; }
+  .alert-sec { background: #fff0f0; border-left: 4px solid #c0392b; }
+  .alert-sec::before { content: '🔐 '; }
+
+  /* Flow steps */
+  .steps { list-style: none; margin: 14px 0; }
+  .steps li { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; font-size: 9.5pt; }
+  .step-num {
+    background: #2a5298;
+    color: #fff;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8.5pt;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* Tabla de palabras clave */
+  .kw-table td:first-child { font-family: monospace; background: #1a2744; color: #5ba3e8; padding: 3px 10px; border-radius: 4px; white-space: nowrap; }
+
+  /* Footer */
+  .page-footer { text-align: center; font-size: 7.5pt; color: #888; padding: 20px 0 10px; border-top: 1px solid #dde; margin-top: 40px; }
+
+  /* Lista bullet */
+  ul.blist { margin: 10px 0 10px 20px; }
+  ul.blist li { margin-bottom: 5px; font-size: 9.5pt; }
+  ul.blist li::marker { color: #2a5298; }
+
+  /* Print */
+  @media print {
+    .cover { min-height: auto; height: 100vh; }
+    .section { page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ PORTADA ═══ -->
+<div class="cover">
+  <div class="badge">SincoApp · Sincronizador Multiempresa</div>
+  <h1>Guía de Carga<br>de Archivos</h1>
+  <h2>CSV y JSON</h2>
+  <p class="subtitle">Manual para la preparación correcta de archivos de datos</p>
+  <hr>
+  <div class="cover-cards">
+    <div class="cover-card"><div class="label">Tipos de archivo</div><div class="value">.csv · .json</div></div>
+    <div class="cover-card"><div class="label">Separador de columnas</div><div class="value">Punto y coma ;</div></div>
+    <div class="cover-card"><div class="label">Separador decimal</div><div class="value">Punto . (formato inglés)</div></div>
+    <div class="cover-card"><div class="label">Codificación</div><div class="value">UTF-8</div></div>
+    <div class="cover-card"><div class="label">Valores booleanos</div><div class="value">True / False</div></div>
+    <div class="cover-card"><div class="label">Primera fila</div><div class="value">Encabezado (se ignora)</div></div>
+  </div>
+  <div class="version">Versión 2.0 · Mayo 2026 · Uso exclusivo clientes SincoApp</div>
+</div>
+
+<!-- ══════════════════════════════════════════ CONTENIDO ═══ -->
+<div class="page toc">
+  <h2>Contenido</h2>
+  <div class="toc-item"><a href="#s1"><span class="toc-num">1.</span> Descripción general de la aplicación</a><span>3</span></div>
+  <div class="toc-item"><a href="#s2"><span class="toc-num">2.</span> Proceso de carga de archivos</a><span>3</span></div>
+  <div class="toc-item"><a href="#s3"><span class="toc-num">3.</span> Formato general de los archivos CSV</a><span>4</span></div>
+  <div class="toc-item"><a href="#s4"><span class="toc-num">4.</span> Archivo de Productos (*productos*.csv)</a><span>5</span></div>
+  <div class="toc-item indent"><a href="#s4-1">4.1 Detalle de las 44 columnas</a><span>5</span></div>
+  <div class="toc-item indent"><a href="#s4-2">4.2 Ejemplo completo</a><span>7</span></div>
+  <div class="toc-item"><a href="#s5"><span class="toc-num">5.</span> Archivo de Clientes (*clientes*.csv)</a><span>8</span></div>
+  <div class="toc-item"><a href="#s6"><span class="toc-num">6.</span> Archivo de Stock (*stock*.csv)</a><span>10</span></div>
+  <div class="toc-item"><a href="#s7"><span class="toc-num">7.</span> Archivo de Repartos (*reparto*.json)</a><span>11</span></div>
+  <div class="toc-item indent"><a href="#s7-1">7.1 Estructura del objeto raíz</a><span>11</span></div>
+  <div class="toc-item indent"><a href="#s7-2">7.2 Estructura de las ventas y detalle de productos</a><span>12</span></div>
+  <div class="toc-item indent"><a href="#s7-3">7.3 Ejemplo completo</a><span>12</span></div>
+  <div class="toc-item"><a href="#s8"><span class="toc-num">8.</span> Errores comunes y cómo resolverlos</a><span>14</span></div>
+  <div class="toc-item"><a href="#s9"><span class="toc-num">9.</span> Recomendaciones prácticas</a><span>15</span></div>
+  <div class="toc-item"><a href="#s10"><span class="toc-num">10.</span> Observaciones técnicas</a><span>16</span></div>
+  <div class="page-footer">SincoApp — Guía de Carga de Archivos CSV y JSON &nbsp;·&nbsp; Pág. 2</div>
+</div>
+
+<!-- ══════════════════════════════════════════ S1 ═══ -->
+<div class="page">
+<div class="section" id="s1">
+  <div class="section-title"><span class="section-num">1</span> Descripción general de la aplicación</div>
+  <p><strong>SincoApp</strong> es una aplicación de escritorio para Windows que opera de forma automática en segundo plano (en la bandeja del sistema). Su función es sincronizar los datos de su empresa con el sistema central, transmitiendo y descargando información en intervalos de tiempo configurables.</p>
+  <p style="margin-top:10px">La aplicación monitorea una carpeta de entrada, detecta los archivos nuevos, los envía al servidor y los mueve a la carpeta <strong>Procesados</strong> (si fue exitoso) o <strong>Errores</strong> (si falló).</p>
+  <div class="info-grid" style="margin-top:16px">
+    <div class="info-card"><div class="lbl">Tipos de datos sincronizados</div><div class="val">Productos · Clientes · Stock · Repartos</div></div>
+    <div class="info-card"><div class="lbl">Operación</div><div class="val">Automática en segundo plano, con intervalos configurables</div></div>
+    <div class="info-card"><div class="lbl">Resultado exitoso</div><div class="val">El archivo se mueve a la carpeta Procesados</div></div>
+    <div class="info-card"><div class="lbl">Resultado con error</div><div class="val">El archivo se mueve a la carpeta Errores + mensaje en el log</div></div>
+  </div>
+</div>
+
+<!-- ══ S2 ══ -->
+<div class="section" id="s2">
+  <div class="section-title"><span class="section-num">2</span> Proceso de carga de archivos</div>
+  <div class="subsection-title">Flujo paso a paso</div>
+  <ol class="steps">
+    <li><span class="step-num">1</span> Prepare el archivo CSV o JSON según el formato indicado en este manual.</li>
+    <li><span class="step-num">2</span> Asegúrese de que el <strong>nombre del archivo</strong> contenga la palabra clave correcta (ver tabla a continuación).</li>
+    <li><span class="step-num">3</span> Copie el archivo en la <strong>carpeta de entrada</strong> configurada en SincoApp.</li>
+    <li><span class="step-num">4</span> La aplicación detecta y procesa el archivo automáticamente en el próximo ciclo de transmisión.</li>
+    <li><span class="step-num">5</span> Si el archivo es correcto → se mueve a la carpeta <strong>Procesados</strong>.</li>
+    <li><span class="step-num">6</span> Si el archivo tiene errores → se mueve a <strong>Errores</strong> y queda registrado en el log de la aplicación.</li>
+  </ol>
+
+  <div class="subsection-title">Palabras clave requeridas en el nombre del archivo</div>
+  <table class="kw-table">
+    <thead><tr><th>Palabra clave en el nombre</th><th>Tipo de información procesada</th><th>Extensión</th><th>Ejemplo de nombre válido</th></tr></thead>
+    <tbody>
+      <tr><td>productos</td><td>Catálogo de productos con precios y stock</td><td>.csv</td><td>Productos_Mayo2026.csv</td></tr>
+      <tr><td>clientes</td><td>Base de clientes con contactos y condiciones</td><td>.csv</td><td>clientes_zona1.csv</td></tr>
+      <tr><td>stock</td><td>Actualización de stock por producto</td><td>.csv</td><td>Stock_Deposito_20260520.csv</td></tr>
+      <tr><td>reparto · repartos</td><td>Reparto completo con detalle de ventas</td><td>.json</td><td>reparto_42.json</td></tr>
+    </tbody>
+  </table>
+  <div class="alert alert-warn">El sistema determina el tipo de archivo <strong>únicamente por el nombre del archivo</strong>, no por su contenido ni por el encabezado. Un archivo llamado <code>Lista_Precios.csv</code> será ignorado por no contener ninguna palabra clave reconocida. El sistema <strong>no distingue mayúsculas de minúsculas</strong> en el nombre.</div>
+</div>
+<div class="page-footer">SincoApp — Guía de Carga de Archivos CSV y JSON &nbsp;·&nbsp; Pág. 3</div>
+</div>
+
+<!-- ══ S3 ══ -->
+<div class="page">
+<div class="section" id="s3">
+  <div class="section-title"><span class="section-num">3</span> Formato general de los archivos CSV</div>
+  <table>
+    <thead><tr><th>Característica</th><th>Valor requerido</th><th>Detalle y ejemplos</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Tipo de archivo</strong></td><td>.csv (texto plano)</td><td>No se aceptan .xlsx, .xls, .ods u otros formatos de hoja de cálculo</td></tr>
+      <tr><td><strong>Codificación de texto</strong></td><td>UTF-8</td><td>Evita caracteres extraños en tildes y ñ. En Excel: Guardar como → CSV UTF-8</td></tr>
+      <tr><td><strong>Separador de columnas</strong></td><td>Punto y coma ;</td><td>No usar coma (,) ni tabulación. Cada columna se separa con ;</td></tr>
+      <tr><td><strong>Separador decimal</strong></td><td>Punto . (formato inglés)</td><td>Correcto: <code>1500.75</code> · Incorrecto: <code>1500,75</code></td></tr>
+      <tr><td><strong>Primera fila</strong></td><td>Encabezado (se ignora)</td><td>La primera fila siempre es de títulos y el sistema la omite. Los datos comienzan en la fila 2</td></tr>
+      <tr><td><strong>Valores booleanos</strong></td><td><code>True</code> o <code>False</code></td><td>Con mayúscula inicial, en inglés. No usar: 1/0, SI/NO, sí/no, verdadero/falso</td></tr>
+      <tr><td><strong>Campos opcionales vacíos</strong></td><td>Dejar vacío entre separadores</td><td>Dos punto y coma seguidos: <code>;;</code> indica campo vacío</td></tr>
+      <tr><td><strong>Texto con punto y coma</strong></td><td>Encerrar entre comillas "…"</td><td>Si un texto contiene ; se escribe: <code>"Texto con; coma"</code></td></tr>
+      <tr><td><strong>Filas vacías</strong></td><td>Se ignoran automáticamente</td><td>Las líneas en blanco dentro del archivo son omitidas sin error</td></tr>
+      <tr><td><strong>Orden de columnas</strong></td><td>Fijo según este manual</td><td>El sistema lee por posición (columna 0, 1, 2…), no por nombre. No reordenar</td></tr>
+    </tbody>
+  </table>
+  <div class="alert alert-info" style="margin-bottom:10px">
+    <strong>Estructura típica del archivo:</strong>
+    <div class="code-block"><span class="hl">Columna1;Columna2;Columna3;...</span>  <span class="comment">← Fila 1: encabezado (ignorado)</span>
+Valor1;Valor2;Valor3;...          <span class="comment">← Fila 2: primer registro</span>
+Valor1;Valor2;Valor3;...          <span class="comment">← Fila 3: segundo registro</span></div>
+  </div>
+  <div class="alert alert-warn"><strong>Importante sobre decimales:</strong> El sistema usa formato numérico inglés (InvariantCulture). El separador decimal <strong>es el punto (.)</strong> y la coma nunca se acepta como decimal. Si exporta desde Excel con configuración regional española, el sistema rechazará los valores numéricos. Antes de importar, verifique que todos los números tengan punto decimal.</div>
+  <div class="alert alert-tip"><strong>Recomendación:</strong> Abra el archivo con Notepad++ antes de importarlo. Podrá verificar la codificación en la barra de estado (debe decir "UTF-8") y buscar comas decimales con Ctrl+F para reemplazarlas por puntos.</div>
+</div>
+<div class="page-footer">SincoApp — Guía de Carga de Archivos CSV y JSON &nbsp;·&nbsp; Pág. 4</div>
+</div>
+
+<!-- ══ S4 ══ -->
+<div class="page">
+<div class="section" id="s4">
+  <div class="section-title"><span class="section-num">4</span> Archivo de Productos</div>
+  <div class="info-grid">
+    <div class="info-card"><div class="lbl">Nombre del archivo</div><div class="val">Debe contener la palabra <strong>productos</strong> (sin distinción de mayúsculas)</div></div>
+    <div class="info-card"><div class="lbl">Extensión</div><div class="val">.csv</div></div>
+    <div class="info-card"><div class="lbl">Total de columnas</div><div class="val">44 columnas (posiciones 0 a 43) + encabezado en la fila 1</div></div>
+    <div class="info-card"><div class="lbl">Columnas obligatorias</div><div class="val">ProductosID (col. 0) · Nombre (col. 6)</div></div>
+  </div>
+
+  <div class="subsection-title" id="s4-1">4.1 — Detalle de columnas</div>
+  <table>
+    <thead><tr><th>#</th><th>Nombre de columna</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr class="group-row"><td colspan="5">— Identificación del producto —</td></tr>
+      <tr><td class="col-n">0</td><td class="col-name">ProductosID</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>ID único del producto en el sistema de origen</td></tr>
+      <tr><td class="col-n">1</td><td class="col-name">ProductosIDPadre</td><td>Entero</td><td class="req-opt">Opcional</td><td>ID del producto padre (para variantes o presentaciones)</td></tr>
+      <tr><td class="col-n">2</td><td class="col-name">CodigoPadre</td><td>Texto</td><td class="req-opt">Opcional</td><td>Código alfanumérico del producto padre</td></tr>
+      <tr><td class="col-n">3</td><td class="col-name">CodigoDeProducto</td><td>Texto</td><td class="req-opt">Opcional</td><td>Código alfanumérico interno del producto (SKU)</td></tr>
+      <tr><td class="col-n">4</td><td class="col-name">Orden</td><td>Entero</td><td class="req-opt">Opcional</td><td>Posición de visualización en el catálogo de la app</td></tr>
+      <tr><td class="col-n">5</td><td class="col-name">TotalVenta</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Acumulado histórico de ventas del producto</td></tr>
+      <tr class="group-row"><td colspan="5">— Datos principales —</td></tr>
+      <tr><td class="col-n">6</td><td class="col-name">Nombre</td><td>Texto</td><td class="req-obl">Obligatorio</td><td>Nombre completo del producto (se muestra en la app al vendedor)</td></tr>
+      <tr><td class="col-n">7</td><td class="col-name">StockEnUnidades</td><td>Entero</td><td class="req-opt">Opcional</td><td>Cantidad de unidades disponibles en stock</td></tr>
+      <tr><td class="col-n">8</td><td class="col-name">CantidadMultiplo</td><td>Entero</td><td class="req-opt">Opcional</td><td>Cantidad mínima o múltiplo de venta (ej: 6 = se vende de a 6)</td></tr>
+      <tr><td class="col-n">9</td><td class="col-name">DesactivadoParaLaVenta</td><td>Bool</td><td class="req-opt">Opcional</td><td><code>True</code> = el producto no está disponible para vender</td></tr>
+      <tr><td class="col-n">10</td><td class="col-name">Rubro</td><td>Texto</td><td class="req-opt">Opcional</td><td>Rubro o clasificación principal del producto</td></tr>
+      <tr><td class="col-n">11</td><td class="col-name">Marca</td><td>Texto</td><td class="req-opt">Opcional</td><td>Marca del producto</td></tr>
+      <tr><td class="col-n">12</td><td class="col-name">StockPropio</td><td>Bool</td><td class="req-opt">Opcional</td><td><code>True</code> = el stock es propio de la empresa (no de terceros)</td></tr>
+      <tr><td class="col-n">13</td><td class="col-name">RutaDeVta</td><td>Entero</td><td class="req-opt">Opcional</td><td>Código de la ruta de venta asignada para este producto</td></tr>
+      <tr><td class="col-n">14</td><td class="col-name">UnidadesPorBulto</td><td>Entero</td><td class="req-opt">Opcional</td><td>Cantidad de unidades que contiene un bulto o caja</td></tr>
+      <tr class="group-row"><td colspan="5">— Precios finales (con IVA) — Listas 1 a 8 —</td></tr>
+      <tr><td class="col-n">15</td><td class="col-name">PrecioUnitarioFinalL1</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio unitario final (con IVA incluido) para la Lista de precios 1</td></tr>
+      <tr><td class="col-n">16</td><td class="col-name">PrecioUnitarioFinalL2</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio unitario final para Lista 2</td></tr>
+      <tr><td class="col-n">17</td><td class="col-name">PrecioUnitarioFinalL3</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio unitario final para Lista 3</td></tr>
+      <tr><td class="col-n">18</td><td class="col-name">PrecioUnitarioFinalL4</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio unitario final para Lista 4</td></tr>
+      <tr><td class="col-n">19</td><td class="col-name">PrecioUnitarioFinalL5</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio unitario final para Lista 5</td></tr>
+      <tr><td class="col-n">20</td><td class="col-name">PrecioUnitarioFinalL6</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio unitario final para Lista 6</td></tr>
+      <tr><td class="col-n">21</td><td class="col-name">PrecioUnitarioFinalL7</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio unitario final para Lista 7</td></tr>
+      <tr><td class="col-n">22</td><td class="col-name">PrecioUnitarioFinalL8</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio unitario final para Lista 8</td></tr>
+      <tr class="group-row"><td colspan="5">— Precios netos (sin IVA) — Listas 1 a 8 —</td></tr>
+      <tr><td class="col-n">23</td><td class="col-name">PrecioUnitarioNetoL1</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio unitario neto (sin IVA) para la Lista de precios 1</td></tr>
+      <tr><td class="col-n">24</td><td class="col-name">PrecioUnitarioNetoL2</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio neto para Lista 2</td></tr>
+      <tr><td class="col-n">25</td><td class="col-name">PrecioUnitarioNetoL3</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio neto para Lista 3</td></tr>
+      <tr><td class="col-n">26</td><td class="col-name">PrecioUnitarioNetoL4</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio neto para Lista 4</td></tr>
+      <tr><td class="col-n">27</td><td class="col-name">PrecioUnitarioNetoL5</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio neto para Lista 5</td></tr>
+      <tr><td class="col-n">28</td><td class="col-name">PrecioUnitarioNetoL6</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio neto para Lista 6</td></tr>
+      <tr><td class="col-n">29</td><td class="col-name">PrecioUnitarioNetoL7</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio neto para Lista 7</td></tr>
+      <tr><td class="col-n">30</td><td class="col-name">PrecioUnitarioNetoL8</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Precio neto para Lista 8</td></tr>
+      <tr class="group-row"><td colspan="5">— Impuestos y búsqueda —</td></tr>
+      <tr><td class="col-n">31</td><td class="col-name">PorcentajeDeIva</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Alícuota de IVA en porcentaje. Ej: <code>21</code> para 21%</td></tr>
+      <tr><td class="col-n">32</td><td class="col-name">TextoParaBusqueda</td><td>Texto</td><td class="req-opt">Opcional</td><td>Palabras clave adicionales para búsqueda en la app (sinónimos, abreviaciones)</td></tr>
+      <tr class="group-row"><td colspan="5">— Indicadores y etiquetas —</td></tr>
+      <tr><td class="col-n">33</td><td class="col-name">ConCargo</td><td>Bool</td><td class="req-opt">Opcional</td><td><code>True</code> = el producto tiene un cargo adicional</td></tr>
+      <tr><td class="col-n">34</td><td class="col-name">Destacado</td><td>Bool</td><td class="req-opt">Opcional</td><td><code>True</code> = se resalta como producto destacado en la app</td></tr>
+      <tr><td class="col-n">35</td><td class="col-name">Oferta</td><td>Bool</td><td class="req-opt">Opcional</td><td><code>True</code> = se marca como producto en oferta</td></tr>
+      <tr><td class="col-n">36</td><td class="col-name">DiasDeStockDisponible</td><td>Entero</td><td class="req-opt">Opcional</td><td>Estimación de días de stock disponible</td></tr>
+      <tr><td class="col-n">37</td><td class="col-name">DiasDePrecioModificado</td><td>Entero</td><td class="req-opt">Opcional</td><td>Cantidad de días transcurridos desde el último cambio de precio</td></tr>
+      <tr><td class="col-n">38</td><td class="col-name">NuevaIncorporacion</td><td>Bool</td><td class="req-opt">Opcional</td><td><code>True</code> = producto nuevo incorporado al catálogo recientemente</td></tr>
+      <tr><td class="col-n">39</td><td class="col-name">IngresosRecientes</td><td>Bool</td><td class="req-opt">Opcional</td><td><code>True</code> = se recibieron ingresos de mercadería recientemente</td></tr>
+      <tr><td class="col-n">40</td><td class="col-name">Baja</td><td>Bool</td><td class="req-opt">Opcional</td><td><code>True</code> = producto inactivo / dado de baja. No aparece para la venta</td></tr>
+      <tr class="group-row"><td colspan="5">— Imagen y categorización —</td></tr>
+      <tr><td class="col-n">41</td><td class="col-name">UrlImagenWeb</td><td>Texto</td><td class="req-opt">Opcional</td><td>URL completa de la imagen del producto (https://…)</td></tr>
+      <tr><td class="col-n">42</td><td class="col-name">NombreCategoria</td><td>Texto</td><td class="req-opt">Opcional</td><td>Nombre de la categoría a la que pertenece el producto</td></tr>
+      <tr><td class="col-n">43</td><td class="col-name">NombreSubCategoria</td><td>Texto</td><td class="req-opt">Opcional</td><td>Nombre de la subcategoría del producto</td></tr>
+    </tbody>
+  </table>
+  <div class="alert alert-info">Sobre las listas de precios: El sistema soporta hasta 8 listas de precios por producto. No es necesario completar todas — solo las que su empresa utilice. Si el cliente tiene asignada la lista 3, el sistema usará el valor de <code>PrecioUnitarioFinalL3</code>. Las listas no usadas pueden dejarse vacías (<code>;;</code>).</div>
+
+  <div class="subsection-title" id="s4-2">4.2 — Ejemplo de archivo Productos.csv</div>
+  <div class="code-block"><span class="hl">ProductosID;ProductosIDPadre;CodigoPadre;CodigoDeProducto;Orden;TotalVenta;Nombre;StockEnUnidades;CantidadMultiplo;DesactivadoParaLaVenta;Rubro;Marca;StockPropio;RutaDeVta;UnidadesPorBulto;PrecioUnitarioFinalL1;PrecioUnitarioFinalL2;PrecioUnitarioFinalL3;PrecioUnitarioFinalL4;PrecioUnitarioFinalL5;PrecioUnitarioFinalL6;PrecioUnitarioFinalL7;PrecioUnitarioFinalL8;PrecioUnitarioNetoL1;PrecioUnitarioNetoL2;PrecioUnitarioNetoL3;PrecioUnitarioNetoL4;PrecioUnitarioNetoL5;PrecioUnitarioNetoL6;PrecioUnitarioNetoL7;PrecioUnitarioNetoL8;PorcentajeDeIva;TextoParaBusqueda;ConCargo;Destacado;Oferta;DiasDeStockDisponible;DiasDePrecioModificado;NuevaIncorporacion;IngresosRecientes;Baja;UrlImagenWeb;NombreCategoria;NombreSubCategoria</span>
+101;0;;A-101;1;50000.00;Aceite de Girasol 1.5L;200;1;False;Aceites;Marca Demo A;True;1;6;1815.50;1690.00;1600.00;1500.00;;;;1500.41;1396.69;1322.31;1239.67;;;;21;aceite girasol botella;False;True;False;30;5;False;False;False;;Alimentos;Aceites
+102;0;;B-202;2;30000.00;Yerba Mate 1kg;150;6;False;Infusiones;Marca Demo B;True;1;6;1250.00;1180.00;1100.00;1000.00;;;;1033.06;975.21;909.09;826.45;;;;21;yerba mate 1 kilo;False;False;True;15;2;True;False;False;;Infusiones;Yerba
+103;0;;C-303;3;0.00;Harina 000 1kg;0;1;True;Harinas;Favorita;True;1;12;850.00;;;;;;;702.48;;;;;;;21;;False;False;False;0;0;False;False;True;;Harinas;Harina 000</div>
+  <div class="alert alert-warn">Las columnas deben estar siempre en el orden exacto indicado aunque no se completen. Si un campo opcional no tiene valor, deje la columna vacía entre los separadores: <code>;;</code>. <strong>Nunca omita columnas ni las reordene</strong>, ya que el sistema lee por posición.</div>
+</div>
+<div class="page-footer">SincoApp — Guía de Carga de Archivos CSV y JSON &nbsp;·&nbsp; Pág. 5</div>
+</div>
+
+<!-- ══ S5 ══ -->
+<div class="page">
+<div class="section" id="s5">
+  <div class="section-title"><span class="section-num">5</span> Archivo de Clientes</div>
+  <div class="info-grid">
+    <div class="info-card"><div class="lbl">Nombre del archivo</div><div class="val">Debe contener la palabra <strong>clientes</strong></div></div>
+    <div class="info-card"><div class="lbl">Extensión</div><div class="val">.csv</div></div>
+    <div class="info-card"><div class="lbl">Total de columnas</div><div class="val">24 columnas (posiciones 0 a 23) + encabezado en la fila 1</div></div>
+    <div class="info-card"><div class="lbl">Columnas obligatorias</div><div class="val">ClientesID (col. 0) · Nombre (col. 1) · ListaDePrecio (col. 8)</div></div>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>Nombre de columna</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr class="group-row"><td colspan="5">— Identificación y datos generales —</td></tr>
+      <tr><td class="col-n">0</td><td class="col-name">ClientesID</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>ID único del cliente en el sistema de origen</td></tr>
+      <tr><td class="col-n">1</td><td class="col-name">Nombre</td><td>Texto</td><td class="req-obl">Obligatorio</td><td>Razón social o nombre completo del cliente</td></tr>
+      <tr><td class="col-n">2</td><td class="col-name">Direccion</td><td>Texto</td><td class="req-opt">Opcional</td><td>Dirección del domicilio comercial</td></tr>
+      <tr><td class="col-n">3</td><td class="col-name">Localidad</td><td>Texto</td><td class="req-opt">Opcional</td><td>Ciudad o localidad</td></tr>
+      <tr><td class="col-n">4</td><td class="col-name">Provincia</td><td>Texto</td><td class="req-opt">Opcional</td><td>Provincia</td></tr>
+      <tr><td class="col-n">5</td><td class="col-name">Telefono</td><td>Texto</td><td class="req-opt">Opcional</td><td>Número de teléfono (puede incluir guiones y código de área)</td></tr>
+      <tr><td class="col-n">6</td><td class="col-name">Email</td><td>Texto</td><td class="req-opt">Opcional</td><td>Correo electrónico del cliente</td></tr>
+      <tr><td class="col-n">7</td><td class="col-name">Codigo</td><td>Texto</td><td class="req-opt">Opcional</td><td>Código interno del cliente (alfanumérico)</td></tr>
+      <tr class="group-row"><td colspan="5">— Condiciones comerciales —</td></tr>
+      <tr><td class="col-n">8</td><td class="col-name">ListaDePrecio</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>ID de la lista de precios asignada. Valores: 1 a 8</td></tr>
+      <tr><td class="col-n">9</td><td class="col-name">DiaDeVenta</td><td>Entero</td><td class="req-opt">Opcional</td><td>Día de la semana habitual de visita (1=Lunes … 7=Domingo)</td></tr>
+      <tr><td class="col-n">10</td><td class="col-name">Tipoclientesid</td><td>Entero</td><td class="req-opt">Opcional</td><td>ID del tipo o categoría de cliente</td></tr>
+      <tr><td class="col-n">11</td><td class="col-name">Reba</td><td>Entero</td><td class="req-opt">Opcional</td><td>Porcentaje de rebaja o descuento especial asignado al cliente</td></tr>
+      <tr><td class="col-n">12</td><td class="col-name">PorcentajePercepcionIb</td><td>Entero</td><td class="req-opt">Opcional</td><td>Porcentaje de percepción de Ingresos Brutos (IIBB)</td></tr>
+      <tr class="group-row"><td colspan="5">— Geolocalización —</td></tr>
+      <tr><td class="col-n">13</td><td class="col-name">Latitud</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Coordenada latitud GPS. Ej: <code>-34.603722</code></td></tr>
+      <tr><td class="col-n">14</td><td class="col-name">Longitud</td><td>Decimal</td><td class="req-opt">Opcional</td><td>Coordenada longitud GPS. Ej: <code>-58.381592</code></td></tr>
+      <tr class="group-row"><td colspan="5">— Datos adicionales y fiscales —</td></tr>
+      <tr><td class="col-n">15</td><td class="col-name">Mce</td><td>Entero</td><td class="req-opt">Opcional</td><td>Código de condición fiscal / Monotributo</td></tr>
+      <tr><td class="col-n">16</td><td class="col-name">CuitValido</td><td>Texto</td><td class="req-opt">Opcional</td><td>Indica si el CUIT fue validado (texto libre)</td></tr>
+      <tr><td class="col-n">17</td><td class="col-name">DiasTelefono</td><td>Entero</td><td class="req-opt">Opcional</td><td>Días transcurridos sin actualizar el teléfono</td></tr>
+      <tr><td class="col-n">18</td><td class="col-name">Mensaje</td><td>Texto</td><td class="req-opt">Opcional</td><td>Nota o mensaje interno sobre el cliente</td></tr>
+      <tr><td class="col-n">19</td><td class="col-name">Orden</td><td>Entero</td><td class="req-opt">Opcional</td><td>Orden de visita en la ruta del vendedor</td></tr>
+      <tr><td class="col-n">20</td><td class="col-name">DiasNoVenta</td><td>Entero</td><td class="req-opt">Opcional</td><td>Días transcurridos desde la última venta realizada</td></tr>
+      <tr><td class="col-n">21</td><td class="col-name">Dni</td><td>Texto</td><td class="req-opt">Opcional</td><td>DNI del titular o responsable del negocio</td></tr>
+      <tr><td class="col-n">22</td><td class="col-name">VendedoresId</td><td>Entero</td><td class="req-opt">Opcional</td><td>ID del vendedor principal asignado a este cliente</td></tr>
+      <tr><td class="col-n">23</td><td class="col-name">Cuit</td><td>Texto</td><td class="req-opt">Opcional</td><td>CUIT del cliente. Ej: <code>20-12345678-9</code></td></tr>
+    </tbody>
+  </table>
+  <div class="subsection-title">Ejemplo de archivo Clientes.csv</div>
+  <div class="code-block"><span class="hl">ClientesID;Nombre;Direccion;Localidad;Provincia;Telefono;Email;Codigo;ListaDePrecio;DiaDeVenta;Tipoclientesid;Reba;PorcentajePercepcionIb;Latitud;Longitud;Mce;CuitValido;DiasTelefono;Mensaje;Orden;DiasNoVenta;Dni;VendedoresId;Cuit</span>
+1001;Almacen El Sol;Av. Corrientes 1234;Buenos Aires;Buenos Aires;011-4567-8901;info@elsol.com;CLI-001;1;2;1;0;0;-34.603722;-58.381592;0;;0;;1;0;;5;20-12345678-9
+1002;Supermercado Norte;Ruta 9 km 50;Rosario;Santa Fe;0341-456-7890;;CLI-002;2;3;1;5;3;-32.944722;-60.650556;0;;0;;2;0;;5;</div>
+</div>
+<div class="page-footer">SincoApp — Guía de Carga de Archivos CSV y JSON &nbsp;·&nbsp; Pág. 8</div>
+</div>
+
+<!-- ══ S6 ══ -->
+<div class="page">
+<div class="section" id="s6">
+  <div class="section-title"><span class="section-num">6</span> Archivo de Stock</div>
+  <div class="info-grid">
+    <div class="info-card"><div class="lbl">Nombre del archivo</div><div class="val">Debe contener la palabra <strong>stock</strong></div></div>
+    <div class="info-card"><div class="lbl">Extensión</div><div class="val">.csv</div></div>
+    <div class="info-card"><div class="lbl">Total de columnas</div><div class="val">4 columnas (posiciones 0 a 3) + encabezado</div></div>
+    <div class="info-card"><div class="lbl">Columnas obligatorias</div><div class="val">ProductosID (col. 0) · StockUnidades (col. 2)</div></div>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>Nombre de columna</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td class="col-n">0</td><td class="col-name">ProductosID</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>ID del producto. Debe coincidir exactamente con el ProductosID del catálogo</td></tr>
+      <tr><td class="col-n">1</td><td class="col-name">CodigoProducto</td><td>Texto</td><td class="req-opt">Opcional</td><td>Código alfanumérico del producto (referencia adicional)</td></tr>
+      <tr><td class="col-n">2</td><td class="col-name">StockUnidades</td><td>Texto</td><td class="req-obl">Obligatorio</td><td>Cantidad de unidades disponibles en stock</td></tr>
+      <tr><td class="col-n">3</td><td class="col-name">StockCajas</td><td>Texto</td><td class="req-opt">Opcional</td><td>Cantidad de cajas disponibles en stock (puede dejarse vacío)</td></tr>
+    </tbody>
+  </table>
+  <div class="alert alert-info">Los campos <code>StockUnidades</code> y <code>StockCajas</code> se transmiten como texto al servidor. Si no maneja stock en cajas, simplemente deje la columna 3 vacía al final de cada fila. El <code>ProductosID</code> debe coincidir exactamente con el ID enviado en el archivo de Productos.</div>
+  <div class="subsection-title">Ejemplo de archivo Stock.csv</div>
+  <div class="code-block"><span class="hl">ProductosID;CodigoProducto;StockUnidades;StockCajas</span>
+101;A-101;200;33
+102;B-202;150;25
+103;C-303;0;</div>
+</div>
+
+<!-- ══ S7 ══ -->
+<div class="section" id="s7">
+  <div class="section-title"><span class="section-num">7</span> Archivo de Repartos (JSON)</div>
+  <div class="info-grid">
+    <div class="info-card"><div class="lbl">Nombre del archivo</div><div class="val">Debe contener la palabra <strong>reparto</strong> o <strong>repartos</strong></div></div>
+    <div class="info-card"><div class="lbl">Extensión</div><div class="val">.json (no .csv)</div></div>
+    <div class="info-card"><div class="lbl">Formato</div><div class="val">JSON estándar · UTF-8 · Objeto único con ventas anidadas</div></div>
+    <div class="info-card"><div class="lbl">Campos obligatorios raíz</div><div class="val">NroReparto (&gt; 0) · FelterosID (&gt; 0) · VentasMultiEmpresa</div></div>
+  </div>
+  <p style="margin-bottom:12px">A diferencia de los archivos CSV, el archivo de Repartos utiliza formato <strong>JSON</strong>. Representa un reparto completo: un fletero, un conjunto de ventas realizadas, y el detalle de los productos de cada venta.</p>
+
+  <div class="subsection-title" id="s7-1">7.1 — Estructura del objeto raíz</div>
+  <table>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">NroReparto</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>Número identificador del reparto. Debe ser mayor a 0</td></tr>
+      <tr><td class="col-name">FelterosID</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>ID del fletero responsable del reparto. Debe ser mayor a 0</td></tr>
+      <tr><td class="col-name">Comentario</td><td>Texto</td><td class="req-opt">Opcional</td><td>Observaciones sobre el reparto. Puede ser <code>""</code> o <code>null</code></td></tr>
+      <tr><td class="col-name">COTSIAP</td><td>Texto</td><td class="req-opt">Opcional</td><td>Código COTSIAP si aplica al reparto</td></tr>
+      <tr><td class="col-name">ClaveFletero</td><td>Texto</td><td class="req-opt">Opcional</td><td>Clave del fletero para validación cruzada</td></tr>
+      <tr><td class="col-name">VentasMultiEmpresa</td><td>Array</td><td class="req-obl">Obligatorio</td><td>Lista de ventas del reparto. Puede tener uno o más elementos</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection-title" id="s7-2">7.2 — Estructura de cada venta (dentro de VentasMultiEmpresa)</div>
+  <table>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">Fecha</td><td>Fecha/Hora</td><td class="req-obl">Obligatorio</td><td>Fecha de la venta en formato ISO 8601: <code>"2026-05-20T00:00:00"</code></td></tr>
+      <tr><td class="col-name">ClientesID</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>ID del cliente al que corresponde la venta</td></tr>
+      <tr><td class="col-name">NroComprobante</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>Número de comprobante o factura</td></tr>
+      <tr><td class="col-name">Total</td><td>Decimal</td><td class="req-obl">Obligatorio</td><td>Importe total de la venta</td></tr>
+      <tr><td class="col-name">RepartosDetalleMultiEmpresaID</td><td>Entero</td><td class="req-opt">Opcional</td><td>ID interno (puede enviarse como 0)</td></tr>
+      <tr><td class="col-name">NroReparto</td><td>Entero</td><td class="req-opt">Opcional</td><td>Número de reparto (puede repetirse del nivel raíz)</td></tr>
+      <tr><td class="col-name">VentasProductosDetalle</td><td>Array</td><td class="req-obl">Obligatorio</td><td>Detalle de los productos incluidos en esta venta</td></tr>
+    </tbody>
+  </table>
+
+  <p style="font-weight:600;margin:12px 0 6px;font-size:9.5pt">Estructura de cada producto (dentro de VentasProductosDetalle)</p>
+  <table>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name">ProductoID</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>ID del producto vendido (debe existir en el catálogo)</td></tr>
+      <tr><td class="col-name">CodigoProducto</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>Código numérico del producto</td></tr>
+      <tr><td class="col-name">CantidadUnidades</td><td>Entero</td><td class="req-obl">Obligatorio</td><td>Cantidad de unidades vendidas de este producto</td></tr>
+      <tr><td class="col-name">Total</td><td>Decimal</td><td class="req-obl">Obligatorio</td><td>Importe total de este ítem (precio × cantidad)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection-title" id="s7-3">7.3 — Ejemplo completo de archivo reparto.json</div>
+  <div class="code-block">{
+  <span class="hl">"NroReparto"</span>: 42,
+  <span class="hl">"FelterosID"</span>: 3,
+  "Comentario": "Reparto zona norte - martes",
+  "COTSIAP": "",
+  "ClaveFletero": "flete2025",
+  <span class="hl">"VentasMultiEmpresa"</span>: [
+    {
+      "Fecha": "2026-05-20T00:00:00",
+      "ClientesID": 1001,
+      "NroComprobante": 5001,
+      "Total": 18500.00,
+      "RepartosDetalleMultiEmpresaID": 0,
+      "NroReparto": 42,
+      "VentasProductosDetalle": [
+        { "ProductoID": 101, "CodigoProducto": 101, "CantidadUnidades": 6, "Total": 10893.00 },
+        { "ProductoID": 102, "CodigoProducto": 102, "CantidadUnidades": 6, "Total": 7500.00 }
+      ]
+    },
+    {
+      "Fecha": "2026-05-20T00:00:00",
+      "ClientesID": 1002,
+      "NroComprobante": 5002,
+      "Total": 9250.00,
+      "RepartosDetalleMultiEmpresaID": 0,
+      "NroReparto": 42,
+      "VentasProductosDetalle": [
+        { "ProductoID": 103, "CodigoProducto": 103, "CantidadUnidades": 12, "Total": 9250.00 }
+      ]
+    }
+  ]
+}</div>
+  <div class="alert alert-warn">El campo <code>FelterosID</code> (nótese: "Felteros" con F, no "Fleteros") debe ser un número <strong>mayor a 0</strong>. Si es 0 o no está presente, el archivo es rechazado con error. Lo mismo aplica a <code>NroReparto</code>: debe ser positivo y mayor a 0.</div>
+</div>
+<div class="page-footer">SincoApp — Guía de Carga de Archivos CSV y JSON &nbsp;·&nbsp; Pág. 11</div>
+</div>
+
+<!-- ══ S8 ══ -->
+<div class="page">
+<div class="section" id="s8">
+  <div class="section-title"><span class="section-num">8</span> Errores comunes y cómo resolverlos</div>
+  <table>
+    <thead><tr><th>Error / Síntoma</th><th>Causa probable</th><th>Solución</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Archivo ignorado, no aparece en Procesados ni Errores</strong></td>
+        <td>El nombre del archivo no contiene ninguna palabra clave reconocida</td>
+        <td>Renombrar incluyendo: <code>productos</code>, <code>clientes</code>, <code>stock</code> o <code>reparto</code></td>
+      </tr>
+      <tr>
+        <td>"No se encontraron registros en el archivo"</td>
+        <td>El archivo solo tiene encabezado o está completamente vacío</td>
+        <td>Asegurarse de que exista al menos una fila de datos por debajo del encabezado</td>
+      </tr>
+      <tr>
+        <td>Valores numéricos no se cargan correctamente</td>
+        <td>Se usó coma como separador decimal (ej: <code>1500,75</code>)</td>
+        <td>Cambiar a punto: <code>1500.75</code>. Configurar Excel para exportar con separador inglés</td>
+      </tr>
+      <tr>
+        <td>Datos en columnas incorrectas</td>
+        <td>Se exportó con un orden de columnas diferente al requerido</td>
+        <td>El orden es fijo y por posición. Reorganizar según las tablas de este manual</td>
+      </tr>
+      <tr>
+        <td>Booleano no reconocido</td>
+        <td>Se usó <code>1/0</code>, <code>SI/NO</code>, <code>sí/no</code> o <code>verdadero/falso</code></td>
+        <td>Usar exactamente <code>True</code> o <code>False</code> con mayúscula inicial</td>
+      </tr>
+      <tr>
+        <td>Columna cortada / datos desplazados</td>
+        <td>Un campo de texto contiene <code>;</code> sin estar entre comillas</td>
+        <td>Encerrar el campo entre comillas dobles: <code>"Texto con; punto y coma"</code></td>
+      </tr>
+      <tr>
+        <td>Tildes o ñ se ven con caracteres extraños</td>
+        <td>El archivo fue guardado con codificación ANSI o Latin-1</td>
+        <td>Guardar el archivo como UTF-8. En Excel: Guardar como → CSV UTF-8</td>
+      </tr>
+      <tr>
+        <td>"FelterosID inválido" en reparto</td>
+        <td>FelterosID es 0 o no está en el JSON</td>
+        <td>Asignar un valor mayor a 0 que corresponda a un fletero activo en el sistema</td>
+      </tr>
+      <tr>
+        <td>"NroReparto inválido" en reparto</td>
+        <td>NroReparto es 0 o negativo</td>
+        <td>Asignar un número de reparto positivo y único</td>
+      </tr>
+      <tr>
+        <td>Archivo movido a carpeta Errores con código HTTP</td>
+        <td>El servidor rechazó el envío (error de red, datos inválidos o API caída)</td>
+        <td>Revisar el log de la aplicación para ver el código HTTP y el mensaje de error. Contactar al administrador del sistema si persiste</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="page-footer">SincoApp — Guía de Carga de Archivos CSV y JSON &nbsp;·&nbsp; Pág. 14</div>
+</div>
+
+<!-- ══ S9 ══ -->
+<div class="page">
+<div class="section" id="s9">
+  <div class="section-title"><span class="section-num">9</span> Recomendaciones prácticas</div>
+
+  <div class="subsection-title">Preparación del archivo en Excel</div>
+  <ul class="blist">
+    <li>Al exportar desde Excel, elija <strong>CSV UTF-8 (delimitado por comas)</strong> y luego abra el archivo con Notepad++ para reemplazar las comas por punto y coma. También puede usar Buscar y reemplazar (Ctrl+H) para cambiar el separador antes de exportar.</li>
+    <li>Para el separador decimal, vaya a <strong>Opciones de Excel → Avanzadas</strong> y desactive "Usar separadores del sistema". Configure el separador decimal como <code>.</code> (punto) antes de exportar.</li>
+    <li>No incluya fórmulas en las celdas del CSV. Asegúrese de que todos los valores sean texto o número puro antes de exportar.</li>
+    <li>Si su sistema de gestión (ERP, facturación) puede exportar directamente al formato requerido, configúrelo para hacerlo y evite pasos manuales que puedan introducir errores.</li>
+  </ul>
+
+  <div class="subsection-title">Verificación antes de importar</div>
+  <ul class="blist">
+    <li>Abra el archivo con <strong>Notepad++</strong> (gratuito) antes de copiarlo a la carpeta de entrada. Verifique que la codificación en la barra de estado diga <em>UTF-8</em>.</li>
+    <li>Confirme que el separador de columnas es <code>;</code> (punto y coma) y no coma.</li>
+    <li>Busque comas decimales con Ctrl+F y reemplácelas por puntos si las encuentra.</li>
+    <li>Cuente las columnas de la primera fila de datos y compárelas con la cantidad esperada según este manual.</li>
+  </ul>
+
+  <div class="subsection-title">Nomenclatura y gestión de archivos</div>
+  <ul class="blist">
+    <li>Use nombres descriptivos con fecha: <code>productos_20260520.csv</code> facilita el seguimiento y el diagnóstico de problemas.</li>
+    <li>No envíe el mismo archivo dos veces si ya fue procesado exitosamente. Podría generar duplicados de datos en el sistema.</li>
+    <li>Si necesita corregir y reenviar un archivo, asegúrese de que el original ya haya sido movido a Procesados o Errores antes de poner el nuevo en la carpeta de entrada.</li>
+    <li>Para repartos, use un número de reparto único por día y por fletero para evitar colisiones.</li>
+  </ul>
+
+  <div class="subsection-title">Flujo de trabajo recomendado</div>
+  <ol class="steps">
+    <li><span class="step-num">1</span> Genere o exporte el archivo desde su sistema de gestión (ERP / software de facturación).</li>
+    <li><span class="step-num">2</span> Abra el archivo en Notepad++ y verifique formato, codificación y separadores.</li>
+    <li><span class="step-num">3</span> Copie el archivo en la carpeta de entrada de SincoApp.</li>
+    <li><span class="step-num">4</span> Espere el ciclo de transmisión automática (el intervalo está configurado en la pantalla principal de la app).</li>
+    <li><span class="step-num">5</span> Revise la carpeta <strong>Procesados</strong>: si el archivo está ahí, la carga fue exitosa.</li>
+    <li><span class="step-num">6</span> Si el archivo está en <strong>Errores</strong>, abra el log de la aplicación para ver el detalle del error y corrija el archivo.</li>
+  </ol>
+
+  <div class="alert alert-tip"><strong>Herramienta gratuita recomendada: Notepad++</strong> (notepad-plus-plus.org) permite abrir archivos CSV, ver la codificación de caracteres, buscar y reemplazar separadores, y verificar el formato antes de importar. Es una herramienta esencial para trabajar con archivos de texto en Windows.</div>
+</div>
+<div class="page-footer">SincoApp — Guía de Carga de Archivos CSV y JSON &nbsp;·&nbsp; Pág. 15</div>
+</div>
+
+<!-- ══ S10 ══ -->
+<div class="page">
+<div class="section" id="s10">
+  <div class="section-title"><span class="section-num">10</span> Observaciones técnicas</div>
+  <p style="margin-bottom:14px">Esta sección documenta comportamientos específicos del sistema que son relevantes conocer para evitar errores:</p>
+
+  <div class="subsection-title">Comportamiento del procesamiento de archivos</div>
+  <ul class="blist">
+    <li>El tipo de archivo se determina <strong>únicamente por el nombre</strong>. Si el nombre no contiene ninguna de las palabras clave reconocidas, el archivo es ignorado silenciosamente sin generar error visible.</li>
+    <li>Las filas completamente vacías dentro del archivo son ignoradas automáticamente.</li>
+    <li>Los espacios al inicio y al final de cada campo son eliminados automáticamente. Aun así, es recomendable no incluirlos para mantener los datos limpios.</li>
+    <li>Si ya existe un archivo con el mismo nombre en la carpeta de destino (Procesados o Errores), el sistema agrega un timestamp al nombre para evitar sobrescritura. Ejemplo: <code>productos_20260520_20260520_163045_123.csv</code></li>
+  </ul>
+
+  <div class="subsection-title">Sobre los valores numéricos opcionales vacíos</div>
+  <ul class="blist">
+    <li>Un campo numérico opcional que esté vacío es tratado como <code>0</code> por el sistema.</li>
+    <li>Un campo booleano vacío es simplemente ignorado (queda con el valor por defecto del modelo).</li>
+    <li>Las coordenadas GPS (Latitud/Longitud) aceptan valores negativos con punto decimal. Ejemplo: <code>-34.603722</code></li>
+  </ul>
+
+  <div class="subsection-title">Listas de precios y asignación a clientes</div>
+  <ul class="blist">
+    <li>El sistema soporta hasta <strong>8 listas de precios</strong> por producto (L1 a L8) con dos variantes: precio final (con IVA) y precio neto (sin IVA).</li>
+    <li>El precio que ve el vendedor para un cliente específico es el que corresponde al campo <code>ListaDePrecio</code> asignado en el archivo de Clientes. Por ejemplo, si un cliente tiene <code>ListaDePrecio = 3</code>, el sistema usará el valor de <code>PrecioUnitarioFinalL3</code>.</li>
+    <li>Solo es necesario completar las listas de precios que su empresa efectivamente utilice.</li>
+  </ul>
+
+  <div class="subsection-title">JSON de Repartos — Nombre del campo FelterosID</div>
+  <div class="alert alert-warn">En el archivo JSON de Repartos, el campo del fletero se llama <code>FelterosID</code> (con "F", no "Fl"). Este es el nombre exacto que debe usar en el JSON. Si escribe <code>FleterosID</code> u otra variante, el sistema no lo reconocerá y generará un error de validación.</div>
+
+  <div class="subsection-title">Gestión de Vendedores</div>
+  <div class="alert alert-info">La gestión de vendedores (altas, modificaciones, asignación de claves) se realiza exclusivamente desde el <strong>portal web de administración</strong>. SincoApp no procesa archivos de vendedores. Para agregar o modificar un vendedor, acceda al portal web y utilice la sección correspondiente.</div>
+</div>
+<div class="page-footer">SincoApp — Guía de Carga de Archivos CSV y JSON &nbsp;·&nbsp; Pág. 16 &nbsp;·&nbsp; Versión 2.0 · Mayo 2026 · Uso exclusivo clientes SincoApp</div>
+</div>
+
+</body>
+</html>
